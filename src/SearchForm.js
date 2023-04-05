@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import "./SearchForm.css"
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
+import moment from 'moment-timezone';
 
 function SearchForm() {
   const [searchValue, setSearchValue] = useState('');
@@ -28,7 +29,8 @@ function SearchForm() {
 
   const renderCityInfo = () => {
     if (weather) {
-        const timeInUserTimezone = format(new Date(), 'h:mm a zzz', {timeZone: timezone});
+        const timeInUserTimezone = moment.utc().tz(timezone.toString()).format('h:mm A z');
+        // const timeInUserTimezone = format(new Date(), 'h:mm a zzz', {timeZone: timezone});
       return (
         <div>
           <h2>Weather in {searchValue}</h2>
@@ -43,7 +45,7 @@ function SearchForm() {
   };
 
   const renderRestaurants = () => {
-    if (restaurants && restaurants.length) {
+    if (restaurants) {
       return (
         <div>
           <h2>Best Restaurants in {searchValue}</h2>
@@ -65,7 +67,7 @@ function SearchForm() {
   };
 
   const renderTouristicSites = () => {
-    if (touristicSites && touristicSites.length) {
+    if (touristicSites) {
       return (
         <div>
           <h2>Touristic Sites in {searchValue}</h2>
