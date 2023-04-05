@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import moment from 'moment-timezone';
 import "./SearchForm.css"
+import { format } from 'date-fns';
 
 function SearchForm() {
   const [searchValue, setSearchValue] = useState('');
@@ -26,9 +26,9 @@ function SearchForm() {
     }
   };
 
-  const renderWeather = () => {
+  const renderCityInfo = () => {
     if (weather) {
-      const timeInUserTimezone = moment.tz(moment(), timezone).format('h:mm A z');
+        const timeInUserTimezone = format(new Date(), 'h:mm a zzz', {timeZone: timezone});
       return (
         <div>
           <h2>Weather in {searchValue}</h2>
@@ -43,7 +43,7 @@ function SearchForm() {
   };
 
   const renderRestaurants = () => {
-    if (restaurants.length) {
+    if (restaurants && restaurants.length) {
       return (
         <div>
           <h2>Best Restaurants in {searchValue}</h2>
@@ -65,7 +65,7 @@ function SearchForm() {
   };
 
   const renderTouristicSites = () => {
-    if (touristicSites.length) {
+    if (touristicSites && touristicSites.length) {
       return (
         <div>
           <h2>Touristic Sites in {searchValue}</h2>
@@ -92,7 +92,7 @@ function SearchForm() {
       <label> Please enter Zip or City: </label>
       <input type="text" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
       <button onClick={handleSearch}>Search</button>
-      {renderWeather()}
+      {renderCityInfo()}
       {renderRestaurants()}
       {renderTouristicSites()}
     </div>
