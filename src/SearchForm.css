@@ -58,14 +58,15 @@ body {
        color: white;
    }
    
-   input.search-bar {
-       border: none;
+   input {
+       border: 1px solid #ccc;
        outline: none;
-       padding: 0.5em 1em;
-       border-radius: 18px;
+       padding: 8px;
+       margin-left: 25px;
+       border-radius: 4px;
        font-family: inherit;
        font-size: 100%;
-       width: calc(100% - 100px);
+       /* width: calc(100% - 100px); */
    }
    
    .flex {
@@ -80,4 +81,6 @@ body {
    label {
     font-weight: bolder;
     color: black;
+    display: flex;
+    justify-content: center;
    }
