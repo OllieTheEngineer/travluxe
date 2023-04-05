@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import {Button} from 'react-bootstrap';
+import axios from 'axios';
 import './SearchForm.css';
 
 function SearchForm() {
 const [zipCode, setZipCode] = useState('');
-const [ city, setCity ] = useState('')
+// const [ city, setCity ] = useState('')
 
 const handleSubmit = async (evt) => {
     evt.preventDefault();
-    const res = await fetch(`/search/${zipCode || city}`);
-    const data = await res.json();
-    console.log(data)
+    try { 
+    const res = await axios.get(`/search/${zipCode}`);
+    const data = res.data;
+    setZipCode(data.zipCode);
+    } catch (err) {
+        console.error(err)
+    }
 }
 
   return (
@@ -18,12 +23,14 @@ const handleSubmit = async (evt) => {
     <form className="search" onSubmit={handleSubmit}>
         <label>
             Zip Code or City:
+            </label>
             <input type="text" 
-                   value={zipCode || city}
-                   onChange={(evt) => setZipCode && setCity(evt.target.value)}
+                   value={zipCode}
+                   onChange={(evt) => setZipCode(evt.target.value)}
                    className="search-bar" 
-                   placeholder="Search City"/>
-        </label>
+                   placeholder="Search City"
+            />
+    
         <div className="weather">
             <h1 className="city"> Weather here is</h1>
             <h1 className="temp">80°C</h1>
