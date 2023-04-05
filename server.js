@@ -2,10 +2,13 @@ const express = require('express');
 const axios = require('axios');
 
 const app = express();
-const port = 3001;
+const port = 3000;
 
+//  created variables for the API keys.
 const WEATHER_API_KEY = 'bd84656e9d09f5d5b44d2a7ce0cc18ec';
 const YELP_API_KEY = 'lWnIKBBcAKTDz529HTfnEOon5qyyaaXddUPs-wV5ThWxMLGP9oOFJ390-dIZTr0f14W-MBI5i6B5lXN0fgRlBQ4MWGXmPwPWXmDDl6bV2wZrrk2VjFXgxjZDy94sZHYx';
+
+// added maxHttpHeaderSize in hopes it would fix my issue but it didn't.
 app.maxHttpHeaderSize = 1000000;
 
 // Weather endpoint
@@ -35,14 +38,17 @@ app.get('/api/restaurants/:location', async (req, res) => {
         'Content-Type': 'application/json'
       }
     });
-    const businesses = data.businesses.map(business => ({
-      name: business.name,
-      rating: business.rating,
-      address: `${business.location.address1}, ${business.location.city}, ${business.location.state} ${business.location.zip_code}`,
-      phone: business.display_phone,
-      image: business.image_url
-    }));
-    res.send({ businesses });
+    const restaurants = data.businesses
+      ? data.businesses.map((restaurant) => ({
+      name: restaurant.name,
+      rating: restaurant.rating,
+      address: `${restaurant.location.address1}, ${restaurant.location.city}, ${restaurant.location.state} ${restaurant.location.zip_code}`,
+      phone: restaurant.display_phone,
+      image: restaurant.image_url,
+    }))
+  : [];
+    res.send({ restaurants });
+    console.log(restaurants)
   } catch (error) {
     console.log(error);
     res.status(500).send('Error getting restaurant data');
@@ -59,14 +65,17 @@ app.get('/api/touristic-sites/:location', async (req, res) => {
         'Content-Type': 'application/json'
       }
     });
-    const businesses = data.businesses.map(business => ({
-      name: business.name,
-      rating: business.rating,
-      address: `${business.location.address1}, ${business.location.city}, ${business.location.state} ${business.location.zip_code}`,
-      phone: business.display_phone,
-      image: business.image_url
-    }));
-    res.send({ businesses });
+    const tourSites = data.businesses
+    ? data.businesses.map((tourSite) => ({
+      name: tourSite.name,
+      rating: tourSite.rating,
+      address: `${tourSite.location.address1}, ${tourSite.location.city}, ${tourSite.location.state} ${tourSite.location.zip_code}`,
+      phone: tourSite.display_phone,
+      image: tourSite.image_url
+    }))
+    : [];
+    res.send({ tourSites });
+    console.log(tourSites)
   } catch (error) {
     console.log(error);
     res.status(500).send('Error getting touristic site data');
