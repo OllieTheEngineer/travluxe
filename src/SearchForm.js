@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import "./SearchForm.css"
 // import { format } from 'date-fns';
-import moment from 'moment-timezone';
+// import moment from 'moment-timezone';
 
 function SearchForm() {
   const [searchValue, setSearchValue] = useState('');
   const [weather, setWeather] = useState(null);
-  const [timezone, setTimezone] = useState('');
+//   const [timezone, setTimezone] = useState('');
   const [restaurants, setRestaurants] = useState([]);
   const [touristicSites, setTouristicSites] = useState([]);
 
@@ -15,10 +15,10 @@ function SearchForm() {
     try {
       const { data: weatherData } = await axios.get(`/api/weather/${searchValue}`);
       setWeather(weatherData);
-      setTimezone(weatherData.timezone);
+    //   setTimezone(weatherData.timezone);
 
-      const { data: restaurantData } = await axios.get(`/api/restaurants/${searchValue}`);
-      setRestaurants(restaurantData.businesses);
+      const { restaurants } = await axios.get(`/api/restaurants/${searchValue}`);
+      setRestaurants(restaurants);
 
       const { data: touristicSiteData } = await axios.get(`/api/touristic-sites/${searchValue}`);
       setTouristicSites(touristicSiteData.businesses);
@@ -29,7 +29,7 @@ function SearchForm() {
 
   const renderCityInfo = () => {
     if (weather) {
-        const timeInUserTimezone = moment.utc().tz(timezone.toString()).format('h:mm A z');
+        // const timeInUserTimezone = moment.utc().tz(timezone.toString()).format('h:mm A z');
         // const timeInUserTimezone = format(new Date(), 'h:mm a zzz', {timeZone: timezone});
       return (
         <div>
@@ -37,7 +37,7 @@ function SearchForm() {
           <p>Temperature: {weather.temperature} °F</p>
           <p>Conditions: {weather.conditions}</p>
           <p>Wind Speed: {weather.windSpeed} mph</p>
-          <p>Time in {searchValue}: {timeInUserTimezone}</p>
+          {/* <p>Time in {searchValue}: {timeInUserTimezone}</p> */}
         </div>
       );
     }
@@ -45,7 +45,7 @@ function SearchForm() {
   };
 
   const renderRestaurants = () => {
-    if (restaurants) {
+    if (restaurants?.length > 0) {
       return (
         <div>
           <h2>Best Restaurants in {searchValue}</h2>
@@ -63,7 +63,7 @@ function SearchForm() {
         </div>
       );
     }
-    return null;
+    // return null;
   };
 
   const renderTouristicSites = () => {
@@ -85,7 +85,7 @@ function SearchForm() {
         </div>
       );
     }
-    return null;
+    // return null;
   };
 
   return (
