@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 //  created variables for the API keys.
 const WEATHER_API_KEY = 'bd84656e9d09f5d5b44d2a7ce0cc18ec';

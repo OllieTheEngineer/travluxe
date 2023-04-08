@@ -1,27 +1,46 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import "./SearchForm.css"
+import { DateTime } from "luxon";
 // import { format } from 'date-fns';
 // import moment from 'moment-timezone';
 
 function SearchForm() {
   const [searchValue, setSearchValue] = useState('');
   const [weather, setWeather] = useState(null);
-//   const [timezone, setTimezone] = useState('');
+  const [timezone, setTimezone] = useState('');
   const [restaurants, setRestaurants] = useState([]);
   const [touristicSites, setTouristicSites] = useState([]);
+
+  const getCityTimezone = async (location) => {
+    const apiUrl = `https://maps.googleapis.com/maps/api/timezone/json?location=${location}&timestamp=${Math.floor(Date.now() / 1000)}&key=<YOUR_API_KEY>`;
+    
+    try {
+      const response = await axios.get(apiUrl);
+      const timezoneId = response.data.timeZoneId;
+      return timezoneId;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+  
 
   const handleSearch = async () => {
     try {
       const { data: weatherData } = await axios.get(`/api/weather/${searchValue}`);
       setWeather(weatherData);
-    //   setTimezone(weatherData.timezone);
+      setTimezone(timezone.weatherdata);
 
       const { restaurants } = await axios.get(`/api/restaurants/${searchValue}`);
       setRestaurants(restaurants);
 
       const { data: touristicSiteData } = await axios.get(`/api/touristic-sites/${searchValue}`);
       setTouristicSites(touristicSiteData.businesses);
+
+      const cityTimezone = await getCityTimezone(searchValue);
+      setTimezone(cityTimezone);
+
     } catch (error) {
       console.log(error);
     }
@@ -29,6 +48,13 @@ function SearchForm() {
 
   const renderCityInfo = () => {
     if (weather) {
+        const utcTime = DateTime.utc();
+        const timeInCity = utcTime.setZone(cityTimezone);
+        const cityTimeString = timeInCity.toLocaleString(DateTime.TIME_WITH_SECONDS);
+        // const localTime = DateTime.fromObject({ zone: timezone }).toLocaleString(DateTime.TIME_WITH_SECONDS);
+        console.log(timeInCity)
+        // const zipTime = DateTime.now().setZone(timezone);
+        // const timeInZipTimezone = zipTime.toLocaleString(DateTime.TIME_WITH_SECONDS);
         // const timeInUserTimezone = moment.utc().tz(timezone.toString()).format('h:mm A z');
         // const timeInUserTimezone = format(new Date(), 'h:mm a zzz', {timeZone: timezone});
       return (
@@ -37,7 +63,7 @@ function SearchForm() {
           <p>Temperature: {weather.temperature} °F</p>
           <p>Conditions: {weather.conditions}</p>
           <p>Wind Speed: {weather.windSpeed} mph</p>
-          {/* <p>Time in {searchValue}: {timeInUserTimezone}</p> */}
+          <p>Time in {searchValue}: {cityTimeString}</p>
         </div>
       );
     }
@@ -67,7 +93,7 @@ function SearchForm() {
   };
 
   const renderTouristicSites = () => {
-    if (touristicSites) {
+    if (touristicSites?.length > 0) {
       return (
         <div>
           <h2>Touristic Sites in {searchValue}</h2>
