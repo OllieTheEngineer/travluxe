@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import "./SearchForm.css"
-import { DateTime } from "luxon";
-// import { format } from 'date-fns';
+import { format } from 'date-fns';
 // import moment from 'moment-timezone';
 
 function SearchForm() {
@@ -12,35 +11,21 @@ function SearchForm() {
   const [restaurants, setRestaurants] = useState([]);
   const [touristicSites, setTouristicSites] = useState([]);
 
-  const getCityTimezone = async (location) => {
-    const apiUrl = `https://maps.googleapis.com/maps/api/timezone/json?location=${location}&timestamp=${Math.floor(Date.now() / 1000)}&key=<YOUR_API_KEY>`;
-    
-    try {
-      const response = await axios.get(apiUrl);
-      const timezoneId = response.data.timeZoneId;
-      return timezoneId;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  }
   
 
   const handleSearch = async () => {
     try {
       const { data: weatherData } = await axios.get(`/api/weather/${searchValue}`);
       setWeather(weatherData);
-      setTimezone(timezone.weatherdata);
 
-      const { restaurants } = await axios.get(`/api/restaurants/${searchValue}`);
-      setRestaurants(restaurants);
+      const timeInUserTimezone = format(new Date(), 'h:mm a zzz', {timeZone:weatherData.timezone});
+      setTimezone(timeInUserTimezone);
+
+      const { data: restaurantsData } = await axios.get(`/api/restaurants/${searchValue}`);
+      setRestaurants(restaurantsData.restaurants);
 
       const { data: touristicSiteData } = await axios.get(`/api/touristic-sites/${searchValue}`);
-      setTouristicSites(touristicSiteData.businesses);
-
-      const cityTimezone = await getCityTimezone(searchValue);
-      setTimezone(cityTimezone);
-
+      setTouristicSites(touristicSiteData.tourSites);
     } catch (error) {
       console.log(error);
     }
@@ -48,22 +33,13 @@ function SearchForm() {
 
   const renderCityInfo = () => {
     if (weather) {
-        const utcTime = DateTime.utc();
-        const timeInCity = utcTime.setZone(cityTimezone);
-        const cityTimeString = timeInCity.toLocaleString(DateTime.TIME_WITH_SECONDS);
-        // const localTime = DateTime.fromObject({ zone: timezone }).toLocaleString(DateTime.TIME_WITH_SECONDS);
-        console.log(timeInCity)
-        // const zipTime = DateTime.now().setZone(timezone);
-        // const timeInZipTimezone = zipTime.toLocaleString(DateTime.TIME_WITH_SECONDS);
-        // const timeInUserTimezone = moment.utc().tz(timezone.toString()).format('h:mm A z');
-        // const timeInUserTimezone = format(new Date(), 'h:mm a zzz', {timeZone: timezone});
-      return (
+        return (
         <div>
           <h2>Weather in {searchValue}</h2>
           <p>Temperature: {weather.temperature} °F</p>
           <p>Conditions: {weather.conditions}</p>
           <p>Wind Speed: {weather.windSpeed} mph</p>
-          <p>Time in {searchValue}: {cityTimeString}</p>
+          <p>Time in {searchValue}: {timezone}</p>
         </div>
       );
     }
@@ -77,19 +53,19 @@ function SearchForm() {
           <h2>Best Restaurants in {searchValue}</h2>
           <ul>
             {restaurants.map((restaurant, index) => (
-              <li key={index}>
+              <li key={restaurant.name}>
                 <h3>{restaurant.name}</h3>
                 <p>Rating: {restaurant.rating}</p>
                 <p>Address: {restaurant.address}</p>
                 <p>Phone: {restaurant.phone}</p>
-                <img src={restaurant.image} alt={`${restaurant.name} restaurant`} width="200" />
+                <img src={restaurant.image} alt={`${restaurant.name} restaurant`} width="100" />
               </li>
             ))}
           </ul>
         </div>
       );
     }
-    // return null;
+    return null;
   };
 
   const renderTouristicSites = () => {
@@ -99,19 +75,19 @@ function SearchForm() {
           <h2>Touristic Sites in {searchValue}</h2>
           <ul>
             {touristicSites.map((site, index) => (
-              <li key={index}>
+              <li key={site.name}>
                 <h3>{site.name}</h3>
                 <p>Rating: {site.rating}</p>
                 <p>Address: {site.address}</p>
                 <p>Phone: {site.phone}</p>
-                <img src={site.image} alt={`${site.name}`} width="200" />
+                <img src={site.image} alt={`${site.name}`} width="100" height="75" />
               </li>
             ))}
           </ul>
         </div>
       );
     }
-    // return null;
+    return null;
   };
 
   return (
