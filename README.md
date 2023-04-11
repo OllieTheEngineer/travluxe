@@ -74,3 +74,10 @@ API Used:
 Restaurants and Tourist data: https://api.yelp.com/v3/businesses/
 weather and timezone data: http://api.openweathermap.org/data
 
+Used REACT to create the front end of the app. So faronly used two components, but will divide it into multiple.
+
+used JEST to test axios routes, although routes work, my test code is faulty. Will work on updating issue.
+
+I wanted to create a sign up and log in form, but decided I will add an email feature that will allow users to send enter their email and the information will be sent to them direct or I will use Google0AuthProvider.
+
+Tried to use luxon and moment time library to update timezone, but experienced major errors with that. I received "invalid data" or it returned the data from my local timezone and not the timzone that has been searched. Will work on updating that as well.
